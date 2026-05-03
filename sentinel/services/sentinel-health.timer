@@ -1,0 +1,12 @@
+[Unit]
+Description=SENTINEL health check timer — runs health-monitor.sh every minute
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=60s
+AccuracySec=15s
+Persistent=true
+Unit=sentinel-health.service
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,30 @@
+[Unit]
+Description=SENTINEL command-center dashboard (Layer 5)
+After=network.target
+
+[Service]
+Type=simple
+User=sentinel
+Group=sentinel
+WorkingDirectory=/opt/sentinel
+EnvironmentFile=-/opt/sentinel/.env
+Environment=SENTINEL_HOME=/opt/sentinel
+Environment=PYTHONUNBUFFERED=1
+# api_server.py binds to 127.0.0.1:8501 only (CT-17 fix).
+ExecStart=/opt/sentinel/.venv/bin/python /opt/sentinel/layer5-dashboard/api_server.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/sentinel/dashboard.log
+StandardError=append:/var/log/sentinel/dashboard.log
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadOnlyPaths=/opt/sentinel/layer5-dashboard
+ReadWritePaths=/var/log/sentinel
+ProtectHome=true
+ProtectKernelTunables=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

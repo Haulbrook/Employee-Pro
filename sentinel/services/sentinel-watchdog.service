@@ -1,0 +1,37 @@
+[Unit]
+Description=SENTINEL watchdog — self-healing immune system (Layer 4)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Gate-2 FIX 2 / CT-11: systemd is the meta-watchdog for this watchdog.
+# WatchdogSec=30 — the watchdog must call sd_notify(WATCHDOG=1) within
+# 30 s; if it doesn't, systemd kills it and restarts.
+Type=notify
+NotifyAccess=main
+WatchdogSec=30
+# The watchdog must call `systemctl restart` on sibling units, which
+# requires root. Sandboxing below limits the blast radius.
+User=root
+Group=root
+WorkingDirectory=/opt/sentinel
+EnvironmentFile=-/opt/sentinel/.env
+Environment=SENTINEL_HOME=/opt/sentinel
+Environment=PYTHONUNBUFFERED=1
+# The watchdog needs systemctl to restart sibling services. We give it the
+# minimum capability required and run as root so it can invoke systemctl.
+# (NoNewPrivileges still applies, and ProtectSystem keeps it sandboxed.)
+ExecStart=/opt/sentinel/.venv/bin/python /opt/sentinel/layer4-selfheal/watchdog.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/sentinel/watchdog.log
+StandardError=append:/var/log/sentinel/watchdog.log
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/opt/sentinel/data /var/log/sentinel
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
