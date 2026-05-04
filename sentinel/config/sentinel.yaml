@@ -1,0 +1,67 @@
+# SENTINEL — master configuration
+# Path: /opt/sentinel/config/sentinel.yaml
+# This file is read by task_queue.py, ai_engine.py, output_router.py,
+# watchdog.py, mode_controller.py, and api_server.py.
+#
+# All values shown are the v1.0 defaults. Validated by utils/validator.py
+# (REQUIRED_CONFIG_KEYS = instance_id, queue, ai, modes, self_heal, dashboard).
+
+instance_id: SENTINEL-01
+
+# ---------- task queue ------------------------------------------------------
+queue:
+  poll_interval_seconds: 60          # GAS poll interval when online
+  max_depth: 100                     # CT-07 fix: reject when in-flight ≥ this
+  max_retries_per_task: 3            # before quarantining
+  offline_max_retries: 10            # CT-13 fix: hard cap on offline retries
+  offline_retry_interval: 300        # 5 min between offline cycles
+  request_timeout_seconds: 30
+
+# ---------- AI engine -------------------------------------------------------
+ai:
+  provider: anthropic                # "anthropic" | "openai"
+  anthropic_model: claude-sonnet-4-6
+  openai_model: gpt-4o-mini
+  max_tokens: 1024
+  temperature: 0.4
+  rate_limit:
+    capacity: 10                     # bucket size
+    refill_per_second: 0.2           # 12 requests/min sustained
+
+# ---------- autonomy ladder (Layer 3) ---------------------------------------
+modes:
+  default: ASSISTED                  # SHADOW | ASSISTED | AUTONOMOUS
+  evaluate_interval_seconds: 600     # mode-controller cadence
+  thresholds:
+    promote:
+      min_tasks: 50
+      max_error_rate: 0.05
+      max_escalation_rate: 0.10
+    downgrade:
+      max_error_rate: 0.15
+      consecutive_failures: 3
+
+# ---------- self-healing (Layer 4) ------------------------------------------
+self_heal:
+  watchdog:
+    cycle_seconds: 10
+    sd_notify_seconds: 5             # Gate-2 FIX 2 / CT-11
+    backoff_schedule: [5, 10, 20, 40, 60]
+    quarantine_after: 5
+  thresholds:
+    disk_warn_pct: 85
+    disk_crit_pct: 95
+    memory_warn_pct: 90
+    memory_crit_pct: 95
+  network:
+    cycle_seconds: 15
+    degraded_ticks: 3
+    recovery_ticks: 2
+    ping_target: 8.8.8.8
+    dns_target: google.com
+
+# ---------- dashboard (Layer 5) ---------------------------------------------
+dashboard:
+  bind_host: 127.0.0.1               # CT-17 fix — never bind to 0.0.0.0
+  bind_port: 8501
+  refresh_seconds: 30
