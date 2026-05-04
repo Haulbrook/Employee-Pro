@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="same-origin">
+  <title>SENTINEL · Command Center</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⬢</span>
+      <span class="title">SENTINEL</span>
+      <span class="subtitle">Command Center</span>
+    </div>
+    <div class="meta" id="topbar-meta">
+      <span id="instance-id">—</span>
+      <span class="dot" id="status-dot" data-state="unknown" aria-hidden="true"></span>
+      <span id="overall">…</span>
+    </div>
+  </header>
+
+  <!-- 1. Status Bar -->
+  <section class="card status-bar" aria-labelledby="sec-status">
+    <h2 id="sec-status">Status</h2>
+    <dl class="kv">
+      <div><dt>Mode</dt>            <dd id="kv-mode">—</dd></div>
+      <div><dt>Network</dt>         <dd id="kv-network">—</dd></div>
+      <div><dt>Uptime</dt>          <dd id="kv-uptime">—</dd></div>
+      <div><dt>Tasks complete</dt>  <dd id="kv-completed">0</dd></div>
+      <div><dt>Tasks failed</dt>    <dd id="kv-failed">0</dd></div>
+      <div><dt>Quarantined</dt>     <dd id="kv-quarantined">none</dd></div>
+    </dl>
+  </section>
+
+  <div class="grid">
+    <!-- 4. Health Metrics -->
+    <section class="card" aria-labelledby="sec-metrics">
+      <h2 id="sec-metrics">Health metrics</h2>
+      <div class="bars">
+        <div class="bar">
+          <div class="bar-label">Disk <span id="metric-disk-pct">—</span>%</div>
+          <div class="bar-track"><div class="bar-fill" id="metric-disk-fill"></div></div>
+          <div class="bar-foot">warn ≥ 85%</div>
+        </div>
+        <div class="bar">
+          <div class="bar-label">Memory <span id="metric-mem-pct">—</span>%</div>
+          <div class="bar-track"><div class="bar-fill" id="metric-mem-fill"></div></div>
+          <div class="bar-foot">warn ≥ 90%</div>
+        </div>
+        <div class="bar">
+          <div class="bar-label">Load (1m)</div>
+          <div class="bar-track"><div class="bar-fill" id="metric-load-fill"></div></div>
+          <div class="bar-foot"><span id="metric-load-val">—</span></div>
+        </div>
+      </div>
+      <div class="net-grid">
+        <div><span>Ping 8.8.8.8</span><strong id="net-ping">—</strong></div>
+        <div><span>DNS google.com</span><strong id="net-dns">—</strong></div>
+      </div>
+    </section>
+
+    <!-- 5. Performance Review -->
+    <section class="card" aria-labelledby="sec-perf">
+      <h2 id="sec-perf">Performance review</h2>
+      <dl class="kv">
+        <div><dt>Completion rate</dt>     <dd id="perf-completion">—</dd></div>
+        <div><dt>Error rate</dt>          <dd id="perf-error">—</dd></div>
+        <div><dt>Escalation rate</dt>     <dd id="perf-escalate">—</dd></div>
+        <div><dt>Total tasks (history)</dt><dd id="perf-total">0</dd></div>
+      </dl>
+      <p class="muted small">
+        Promotion to AUTONOMOUS requires ≥ 50 completed, error &lt; 5%, escalation &lt; 10%.
+      </p>
+    </section>
+  </div>
+
+  <!-- 2. Active Tasks + 3. Task History -->
+  <section class="card" aria-labelledby="sec-tasks">
+    <h2 id="sec-tasks">Tasks</h2>
+    <div class="filterbar">
+      <label>Filter
+        <select id="filter-status">
+          <option value="">all</option>
+          <option value="processing">processing</option>
+          <option value="complete">complete</option>
+          <option value="failed">failed</option>
+          <option value="quarantined">quarantined</option>
+          <option value="escalated">escalated</option>
+        </select>
+      </label>
+      <label>Type
+        <select id="filter-type">
+          <option value="">all</option>
+          <option>classify</option><option>generate</option>
+          <option>analyze</option><option>escalate</option>
+          <option>report</option><option>alert</option><option>custom</option>
+        </select>
+      </label>
+      <span class="muted small" id="task-count">0 tasks</span>
+    </div>
+    <div class="table-wrap">
+      <table aria-describedby="sec-tasks">
+        <thead>
+          <tr>
+            <th>Task ID</th><th>Type</th><th>Priority</th>
+            <th>Status</th><th>Attempts</th><th>Completed</th><th>Error</th>
+          </tr>
+        </thead>
+        <tbody id="task-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 6. Alert Log -->
+  <section class="card" aria-labelledby="sec-alerts">
+    <h2 id="sec-alerts">Alert log</h2>
+    <ul class="alerts" id="alert-list"></ul>
+  </section>
+
+  <footer class="foot">
+    <span id="last-refresh">—</span>
+    <span class="muted small">auto-refresh every 30 s · all data on this dashboard is local to 127.0.0.1</span>
+  </footer>
+
+  <script src="/dashboard.js" defer></script>
+</body>
+</html>

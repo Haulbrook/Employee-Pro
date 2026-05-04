@@ -1,0 +1,31 @@
+# SENTINEL — alert thresholds and routing
+# Path: /opt/sentinel/config/alerts.yaml
+
+thresholds:
+  disk:
+    warn_pct: 85
+    crit_pct: 95
+  memory:
+    warn_pct: 90
+    crit_pct: 95
+  network:
+    offline_after_ticks: 3
+    recovery_ticks: 2
+  task_queue:
+    backlog_warn: 50
+    backlog_crit: 100
+    consecutive_failures_crit: 3
+
+# Channels alerts fire on, by severity. Channel names match output_router.
+severity_routes:
+  info:     [file]
+  warn:     [file, slack]
+  critical: [file, slack, email]
+
+# Quiet hours (UTC) — alerts queue here are still written to file but slack
+# and email are deferred until the window closes. Empty = always send.
+quiet_hours_utc: []
+
+# Cooldown to prevent alert storms. The same component can re-alert at most
+# once per cooldown window unless the severity escalates.
+cooldown_seconds: 600

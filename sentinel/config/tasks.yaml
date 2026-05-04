@@ -1,0 +1,36 @@
+# SENTINEL — task routing
+# Path: /opt/sentinel/config/tasks.yaml
+# Maps each task_type to the output channels it should fire when running in
+# AUTONOMOUS mode. ASSISTED mode always restricts delivery to "file".
+
+routes:
+  classify:  [file]
+  generate:  [file]
+  analyze:   [file]
+  escalate:  [file, slack, email]
+  report:    [file, email]
+  alert:     [file, slack]
+  custom:    [file]
+
+# ---------- per-type defaults (used by ai_engine if you want to override
+# the system prompt or model on a per-task-type basis; v1.0 reads only
+# `routes:` above, but the structure is reserved here for v1.1.) ------------
+defaults:
+  generate:
+    max_tokens: 1024
+    temperature: 0.4
+  classify:
+    max_tokens: 256
+    temperature: 0.0
+  analyze:
+    max_tokens: 1024
+    temperature: 0.2
+  escalate:
+    max_tokens: 256
+    temperature: 0.0
+  report:
+    max_tokens: 2048
+    temperature: 0.3
+  alert:
+    max_tokens: 256
+    temperature: 0.2

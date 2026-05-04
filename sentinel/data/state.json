@@ -1,0 +1,10 @@
+{
+  "instance_id": "SENTINEL-01",
+  "mode": "ASSISTED",
+  "started_at": null,
+  "last_task_at": null,
+  "tasks_completed": 0,
+  "tasks_failed": 0,
+  "tasks_escalated": 0,
+  "quarantined_components": []
+}

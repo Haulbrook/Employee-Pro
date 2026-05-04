@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# SENTINEL state (regenerated at runtime)
+.env
+data/outputs/
+data/quarantine/
+data/task-cache.json
+data/metrics.json
+
+# OS
+.DS_Store
